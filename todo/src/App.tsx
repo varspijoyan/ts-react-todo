@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const set = new Set();
+const set = new Set<number>();
 
 function generateRandomId() {
-  let id;
+  let id:number;
 
   do {
     id = Math.floor(Math.random() * 1000000);
@@ -28,13 +28,13 @@ function App() {
 
   const [inputValue, setInputValue] = useState<string>("");
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-  const [editById, setEditById] = useState(null);
+  const [editById, setEditById] = useState<number | null>(null);
   const [editInputValue, setEditInputValue] = useState<string>("");
 
   // Functions
   const handleAddTodo = () => {
     if (inputValue !== "") {
-      setTodo((prev: any) => [
+      setTodo((prev: Todo[]) => [
         ...prev,
         {
           id: generateRandomId(),
@@ -46,8 +46,8 @@ function App() {
   };
 
   const handleEditTodo = (id: number, newTitle: string) => {
-    setTodo((prev: any) =>
-      prev.map((item: any) =>
+    setTodo((prev: Todo[]) =>
+      prev.map((item: Todo) =>
         id === item.id ? { ...item, title: newTitle } : item
       )
     );
@@ -56,7 +56,7 @@ function App() {
   };
 
   const handleDeleteTodo = (id: number) => {
-    setTodo((prev: any) => prev.filter((item: any) => id !== item.id));
+    setTodo((prev: Todo[]) => prev.filter((item: Todo) => id !== item.id));
   };
 
   useEffect(() => {
@@ -80,7 +80,7 @@ function App() {
       </div>
       <div className="todos">
         {todo.length > 0 ? (
-          todo.map((item: any) => (
+          todo.map((item: Todo) => (
             <div className="todo" key={item.id}>
               {isEditMode && editById === item.id ? (
                 <>
