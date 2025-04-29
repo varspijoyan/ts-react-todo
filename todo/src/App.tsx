@@ -14,9 +14,14 @@ function generateRandomId() {
   return id;
 }
 
+type Todo = {
+  id: number;
+  title: string;
+};
+
 function App() {
   // States
-  const [todo, setTodo] = useState(() => {
+  const [todo, setTodo] = useState<Todo[]>(() => {
     const storedTodos = localStorage.getItem("todos");
     return storedTodos ? JSON.parse(storedTodos) : [];
   });
@@ -42,14 +47,9 @@ function App() {
 
   const handleEditTodo = (id: number, newTitle: string) => {
     setTodo((prev: any) =>
-      prev.map((item: any) => {
-        if (id === item.id) {
-          return {
-            ...item,
-            title: newTitle,
-          };
-        }
-      })
+      prev.map((item: any) =>
+        id === item.id ? { ...item, title: newTitle } : item
+      )
     );
     setIsEditMode(false);
     setEditById(null);
@@ -81,7 +81,7 @@ function App() {
       <div className="todos">
         {todo.length > 0 ? (
           todo.map((item: any) => (
-            <div className="todo">
+            <div className="todo" key={item.id}>
               {isEditMode && editById === item.id ? (
                 <>
                   <input
