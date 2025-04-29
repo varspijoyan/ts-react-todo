@@ -1,21 +1,131 @@
+import { useEffect, useState } from "react";
 import "./App.css";
 
+const set = new Set();
+
+function generateRandomId() {
+  let id;
+
+  do {
+    id = Math.floor(Math.random() * 1000000);
+  } while (set.has(id));
+
+  set.add(id);
+  return id;
+}
+
 function App() {
+  // States
+  const [todo, setTodo] = useState(() => {
+    const storedTodos = localStorage.getItem("todos");
+    return storedTodos ? JSON.parse(storedTodos) : [];
+  });
+
+  const [inputValue, setInputValue] = useState<string>("");
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [editById, setEditById] = useState(null);
+  const [editInputValue, setEditInputValue] = useState<string>("");
+
+  // Functions
+  const handleAddTodo = () => {
+    if (inputValue !== "") {
+      setTodo((prev: any) => [
+        ...prev,
+        {
+          id: generateRandomId(),
+          title: inputValue,
+        },
+      ]);
+    }
+    setInputValue("");
+  };
+
+  const handleEditTodo = (id: number, newTitle: string) => {
+    setTodo((prev: any) =>
+      prev.map((item: any) => {
+        if (id === item.id) {
+          return {
+            ...item,
+            title: newTitle,
+          };
+        }
+      })
+    );
+    setIsEditMode(false);
+    setEditById(null);
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    setTodo((prev: any) => prev.filter((item: any) => id !== item.id));
+  };
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todo));
+  }, [todo]);
+
   return (
     <div className="container">
       <h1 className="title">Your todos</h1>
       <div className="input-container">
-        <input type="text" name="addTodo" placeholder="Add todo" />
-        <button className="add-btn">Add</button>
+        <input
+          type="text"
+          name="addTodo"
+          placeholder="Add todo"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <button className="add-btn" onClick={handleAddTodo}>
+          Add
+        </button>
       </div>
       <div className="todos">
-        <div className="todo">
-          <p>Something to add here</p>
-          <div className="buttons">
-            <button className="edit-btn"><span className="icon-pencil"></span></button>
-            <button className="delete-btn"><span className="icon-bin"></span></button>
-          </div>
-        </div>
+        {todo.length > 0 ? (
+          todo.map((item: any) => (
+            <div className="todo">
+              {isEditMode && editById === item.id ? (
+                <>
+                  <input
+                    type="text"
+                    name="edit"
+                    value={editInputValue}
+                    onChange={(e) => setEditInputValue(e.target.value)}
+                  />
+                  <button
+                    className="save-btn"
+                    onClick={() => handleEditTodo(item.id, editInputValue)}
+                  >
+                    <span className="icon-checkmark"></span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>{item.title}</p>
+                  <div className="buttons">
+                    <button
+                      className="edit-btn"
+                      onClick={() => {
+                        setIsEditMode(true);
+                        setInputValue("");
+                        setEditById(item.id);
+                        setEditInputValue(item.title);
+                      }}
+                    >
+                      <span className="icon-pencil"></span>
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDeleteTodo(item.id)}
+                    >
+                      <span className="icon-bin"></span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No todos added yet</p>
+        )}
       </div>
     </div>
   );

@@ -143,3 +143,25 @@ body {
 .delete-btn {
   background-color: rgb(184, 73, 73);
 }
+
+input[name="edit"] {
+  border: none;
+  outline: none;
+  background-color: rgb(212, 217, 218);
+  padding-left: 10px;
+  height: 30px;
+  border-radius: 10px;
+  width: 90%;
+}
+
+.save-btn {
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(217, 191, 166);
+  cursor: pointer;
+  margin-left: 10px;
+}
